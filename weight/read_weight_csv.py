@@ -2,10 +2,11 @@ import csv
 import datetime
 import dateutil.tz
 import dateutil.parser
-from dateutil import zoneinfo
+from dateutil import tz
+tz.gettz
 
-DAWN_TIME = datetime.datetime(1970, 1, 1, tzinfo=dateutil.tz.tzutc())
-TIME_ZONE = zoneinfo.gettz("America/New_York")
+TIME_ZONE = tz.gettz("Europe/Prague")
+DAWN_TIME = datetime.datetime(1970, 1, 1, tzinfo=TIME_ZONE)
 POUNDS_PER_KILOGRAM = 2.20462
 
 def nano(val):
@@ -13,23 +14,26 @@ def nano(val):
   return '%d' % (int(val) * 1e9)
 
 def epoch_of_time_str(dateTimeStr, tzinfo):
-  log_time = dateutil.parser.parse(dateTimeStr).replace(tzinfo=tzinfo)
+  log_time = datetime.datetime.strptime(dateTimeStr, "%d.%m.%Y %H:%M:%S").replace(tzinfo=tzinfo)
+  if log_time.year == 2023 and log_time.month == 1 and log_time.day == 6:
+      print()
   return (log_time - DAWN_TIME).total_seconds()
 
 def read_weights_csv():
-    print "Reading Weights"
-    is_header = True
+
     weights = []
-    with open('weights.csv', 'rb') as csvfile:
-        weights_reader = csv.reader(csvfile, delimiter=',')
-        for row in weights_reader:
-            if is_header:
-                is_header=False
-                continue
-            weights.append(dict(
-                seconds_from_dawn=epoch_of_time_str(row[0], TIME_ZONE),
-                weight=float(row[1])
-                ))
+    for f_name in ("weights", "weights2",):
+        is_header = True
+        with open(f'{f_name}.csv', 'r', encoding="utf-8") as csvfile:
+            weights_reader = csv.reader(csvfile, delimiter=',')
+            for row in weights_reader:
+                if is_header:
+                    is_header=False
+                    continue
+                weights.append(dict(
+                    seconds_from_dawn=epoch_of_time_str(row[0], TIME_ZONE),
+                    weight=float(row[1])
+                    ))
     return weights
 
 def read_weights_csv_with_gfit_format():

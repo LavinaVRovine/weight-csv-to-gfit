@@ -42,8 +42,6 @@ def import_weight_to_gfit():
     # only approved IP is my Digital Ocean Server
     flow = OAuth2WebServerFlow(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE, redirect_uri=REDIRECT_URI)
     auth_uri = flow.step1_get_authorize_url()
-    print "Copy this url to web browser for authorization: "
-    print auth_uri
 
     # hmm, had to manually pull this as part of a Google Security measure.
     # there must be a way to programatically get this, but this exercise doesn't need it ... yet...
